@@ -308,3 +308,28 @@ resource "aws_instance" "db-1" {
     Name = "dB"
   }
 }
+
+resource "aws_lb_target_group" "web-lb-tg" {
+  name             = "web-servers"
+  protocol         = "HTTP"
+  vpc_id           = aws_vpc.webapp-vpc.id
+  target_type      = "instance"
+  port             = "80"
+  protocol_version = "HTTP1"
+  health_check {
+    enabled             = true
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    interval            = 10
+    matcher             = 200
+    path                = "/"
+    port                = "traffic-port"
+    timeout             = 5
+  }
+}
+
+resource "aws_lb_target_group_attachment" "web-tg-at-1" {
+  target_group_arn = aws_lb_target_group.web-lb-tg.arn
+  target_id        = aws_instance.web-ec2a.id
+  port             = 80
+}
