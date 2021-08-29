@@ -246,6 +246,10 @@ resource "aws_instance" "web-ec2a" {
   subnet_id                   = aws_subnet.web-1a.id
   key_name                    = "chukky"
   associate_public_ip_address = "true"
+  user_data                   = <<-EOT
+    #! /bin/bash
+    sudo docker run -d -p 80:80 -p 443:443 -h web1 benpiper/mtwa:web
+  EOT
   tags = {
     Name = "web-1"
   }
